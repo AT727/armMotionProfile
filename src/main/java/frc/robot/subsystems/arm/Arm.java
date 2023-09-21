@@ -7,6 +7,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -21,6 +22,8 @@ public class Arm extends SubsystemBase {
         this.anchorEncoder = this.anchorMotor.getEncoder();
         configureEncoders();
         this.anchorPIDController = this.anchorMotor.getPIDController(); 
+
+        initTuneControllers();
     }
 
     public void configureMotor(){
@@ -42,8 +45,23 @@ public class Arm extends SubsystemBase {
         this.anchorPIDController.setP(Constants.Arm.kP);
         this.anchorPIDController.setI(Constants.Arm.kI);
         this.anchorPIDController.setD(Constants.Arm.kD);
-        this.anchorPIDController.setFF(Constants.Arm.kFF);
     }
+    
+    public void initTuneControllers(){
+        SmartDashboard.putNumber("anchorKP", SmartDashboard.getNumber("anchorKP", Constants.Arm.kP));
+        SmartDashboard.putNumber("anchorKI", SmartDashboard.getNumber("anchorKI", Constants.Arm.kI));
+        SmartDashboard.putNumber("anchorKD", SmartDashboard.getNumber("anchorKD", Constants.Arm.kD));
+    }
+
+     public void tuneControllers() {
+        double anchorKP = SmartDashboard.getEntry("anchorKP").getDouble(0);
+        double anchorKI = SmartDashboard.getEntry("anchorKI").getDouble(0);
+        double anchorKD = SmartDashboard.getEntry("anchorKD").getDouble(0);
+
+        this.anchorPIDController.setP(anchorKP);
+        this.anchorPIDController.setI(anchorKI);
+        this.anchorPIDController.setD(anchorKD);
+     }
 
     public double getAnchorAngle(){
         return this.anchorEncoder.getPosition();
@@ -61,4 +79,11 @@ public class Arm extends SubsystemBase {
         this.anchorPIDController.setReference(angle, CANSparkMax.ControlType.kPosition, 2, arbFFVoltage, SparkMaxPIDController.ArbFFUnits.kVoltage);
     }
 
+
+    @Override
+    public void periodic() {
+
+        tuneControllers();
+
+   }
 }

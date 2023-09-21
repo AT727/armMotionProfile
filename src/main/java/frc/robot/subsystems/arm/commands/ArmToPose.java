@@ -6,22 +6,31 @@ import frc.robot.subsystems.arm.Arm;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.Constants;
+import edu.wpi.first.wpilibj.Timer;
 
 
 
-public class MoveArmToPos extends CommandBase {
+public class ArmToPose extends CommandBase {
     Arm arm;
     double setpoint;
     TrapezoidProfile trapezoidProfile;
-    TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(2, 1);
+    TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(
+        Constants.Arm.maxVel, 
+        Constants.Arm.maxAccel);
+    Timer timer = new Timer();
+    double trapezoidPofileStartTime;
     
 
-    public MoveArmToPos(Arm arm, double setpoint) {
+    public ArmToPose(Arm arm, double setpoint) {
         this.arm = arm;
         this.setpoint = setpoint;
+        
 
         //create new profile, input current position & velocity, set goal to stop at new position
         this.trapezoidProfile = new TrapezoidProfile(this.constraints, new TrapezoidProfile.State(setpoint, 0), arm.getAnchorState());
+        //set timer to 0
+        trapezoidPofileStartTime = timer.getFPGATimestamp();
+
         addRequirements(arm);
     }
 
@@ -32,12 +41,16 @@ public class MoveArmToPos extends CommandBase {
 
     @Override
     public void execute(){
+        double currentTime = timer.getFPGATimestamp();
         //calculate position & velocity every loop
-        TrapezoidProfile.State setpointState = trapezoidProfile.calculate(0.02);
+        TrapezoidProfile.State setpointState = trapezoidProfile.calculate(currentTime - trapezoidPofileStartTime);
         //calculate feedforward for goal position & velocity
         double arbFFVoltage = Constants.Arm.ARM_FEEDFORWARD.calculate(setpointState.position, setpointState.velocity);
         //set position & feedforward
         arm.setPosition(setpointState.position, arbFFVoltage);
+        
+        trapezoidPofileStartTime = timer.getFPGATimestamp();
+        //trapezoidPofileStartTime = currentTime;
     }
 
     @Override
