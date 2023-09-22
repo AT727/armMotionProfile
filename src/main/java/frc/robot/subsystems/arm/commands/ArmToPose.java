@@ -28,7 +28,7 @@ public class ArmToPose extends CommandBase {
 
         //create new profile, input current position & velocity, set goal to stop at new position
         this.trapezoidProfile = new TrapezoidProfile(this.constraints, new TrapezoidProfile.State(setpoint, 0), arm.getAnchorState());
-        trapezoidPofileStartTime = timer.getFPGATimestamp();
+        this.trapezoidPofileStartTime = timer.getFPGATimestamp();
 
         addRequirements(arm);
     }
