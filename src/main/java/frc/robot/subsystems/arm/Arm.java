@@ -38,6 +38,7 @@ public class Arm extends SubsystemBase {
 
     public void configureEncoders() {
         this.anchorEncoder.setPositionConversionFactor(Constants.Arm.kRatio);
+        this.anchorEncoder.setVelocityConversionFactor(Constants.Arm.velocityConversationFactor);
         this.anchorEncoder.setPosition(Constants.Arm.kContracted);  
      }
 
