@@ -48,9 +48,6 @@ public class ArmToPose extends CommandBase {
         double arbFFVoltage = Constants.Arm.ARM_FEEDFORWARD.calculate(setpointState.position, setpointState.velocity);
         //set position & feedforward
         arm.setPosition(setpointState.position, arbFFVoltage);
-        
-        trapezoidPofileStartTime = timer.getFPGATimestamp();
-        //trapezoidPofileStartTime = currentTime;
     }
 
     @Override
