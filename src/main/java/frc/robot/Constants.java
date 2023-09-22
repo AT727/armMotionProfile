@@ -14,6 +14,7 @@ public final class Constants {
     public static final int kAnchorPort = 22;
     public static final boolean kInverted = true;
     public static final double kRatio = (90.0 - 13.0) / (27.0); 
+    public static final double velocityConversionFactor = 0;
 
     public static final double kP = 0;
     public static final double kI = 0;
